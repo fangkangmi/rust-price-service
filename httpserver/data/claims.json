@@ -1,0 +1,12 @@
+[
+    {
+        "item": "Laptop",
+        "vat_incl": false,
+        "quantity": 3
+    },
+    {
+        "item": "Monitor",
+        "vat_incl": true,
+        "quantity": 5
+    }
+]
