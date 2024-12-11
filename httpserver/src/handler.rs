@@ -34,7 +34,9 @@ impl Handler for PageNotFoundHandler {
 
 impl Handler for StaticPageHandler {
     fn handle(req: &HttpRequest) -> HttpResponse {
-        let http::httprequest::Resource::Path(s) = &req.resource;
+        let http::httprequest::Resource::Path(s) = &req.resource else {
+            panic!("Resource not found");
+        };
         let route: Vec<&str> = s.split("/").collect();
         match route[1] {
             "" => HttpResponse::new("200", None, Self::load_file("index.html")),
@@ -71,15 +73,17 @@ impl WebServiceHandler {
 
 impl Handler for WebServiceHandler {
     fn handle(req: &HttpRequest) -> HttpResponse {
-        let http::httprequest::Resource::Path(s) = &req.resource;
+        let http::httprequest::Resource::Path(s) = &req.resource else {
+            panic!("Resource not found");
+        };
         let route: Vec<&str> = s.split("/").collect();
 
         match route[2] {
             "shipping" if route.len() > 2 && route[3] == "orders" => {
-                let body = Some(serde_json::to_string(&Self::load_json()).unwrap());
+                let body = serde_json::to_string(&Self::load_json()).unwrap().into_bytes();
                 let mut headers: HashMap<&str, &str> = HashMap::new();
                 headers.insert("Content-Type", "application/json");
-                HttpResponse::new("200", Some(headers), body)
+                HttpResponse::new("200", Some(headers), Some(body))
             }
             _ => HttpResponse::new("404", None, Self::load_file("404.html")),
         }

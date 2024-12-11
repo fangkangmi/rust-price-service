@@ -45,6 +45,7 @@ impl<'a> From<HttpResponse<'a>> for String {
     }
 }
 
+#[allow(dead_code)]
 impl<'a> HttpResponse<'a> {
     pub fn new(
         status_code: &'a str,
