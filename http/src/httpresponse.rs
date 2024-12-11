@@ -57,7 +57,7 @@ impl<'a> HttpResponse<'a> {
             response.status_code = status_code;
         };
         response.headers = match &headers {
-            Some(h) => headers,
+            Some(_h) => headers,
             None => {
                 let mut h = HashMap::new();
                 h.insert("Content-Type", "text/html");
