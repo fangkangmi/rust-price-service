@@ -41,7 +41,7 @@ impl From<&str> for Version {
 }
 
 #[derive(Debug, PartialEq)]
-pub enum Resourse {
+pub enum Resource {
     Path(String),
     Uninitialized,
 }
@@ -50,7 +50,7 @@ pub enum Resourse {
 pub struct HttpRequest {
     pub method: Method,
     pub version: Version,
-    pub resourse: Resourse,
+    pub resource: Resource,
     pub headers: HashMap<String, String>,
     pub message_body: Vec<u8>,
 }
@@ -64,12 +64,12 @@ impl FromStr for HttpRequest {
         let mut message_body = Vec::new();
         let mut method = Method::Uninitialized;
         let mut version = Version::Uninitialized;
-        let mut resourse = Resourse::Uninitialized;
+        let mut resource = Resource::Uninitialized;
 
         if let Some(request_line) = lines.next() {
             let mut parts = request_line.split_whitespace();
             method = Method::from(parts.next().ok_or("Missing method")?);
-            resourse = Resourse::Path(parts.next().ok_or("Missing resource")?.to_string());
+            resource = Resource::Path(parts.next().ok_or("Missing resource")?.to_string());
             version = Version::from(parts.next().ok_or("Missing version")?);
         }
 
@@ -93,7 +93,7 @@ impl FromStr for HttpRequest {
         Ok(HttpRequest {
             method,
             version,
-            resourse,
+            resource,
             headers,
             message_body,
         })
@@ -131,7 +131,7 @@ mod tests {
         let request: HttpRequest = request_str.parse().unwrap();
         assert_eq!(request.method, Method::GET);
         assert_eq!(request.version, Version::V1_1);
-        assert_eq!(request.resourse, Resourse::Path("/path".to_string()));
+        assert_eq!(request.resource, Resource::Path("/path".to_string()));
         assert_eq!(request.headers.get("Host"), Some(&"example.com".to_string()));
         assert_eq!(request.message_body, b"body".to_vec());
     }
@@ -142,7 +142,7 @@ mod tests {
         let request: HttpRequest = request_str.parse().unwrap();
         assert_eq!(request.method, Method::GET);
         assert_eq!(request.version, Version::V1_1);
-        assert_eq!(request.resourse, Resourse::Path("/path".to_string()));
+        assert_eq!(request.resource, Resource::Path("/path".to_string()));
         assert_eq!(request.headers.get("Host"), Some(&"example.com".to_string()));
         assert_eq!(request.message_body, b"body".to_vec());
     }

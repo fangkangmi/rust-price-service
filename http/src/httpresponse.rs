@@ -1,5 +1,4 @@
 use std::collections::HashMap;
-use std::default;
 use std::io::{Result, Write};
 
 #[derive(Debug, PartialEq, Clone)]
