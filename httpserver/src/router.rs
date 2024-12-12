@@ -7,7 +7,10 @@ pub struct Router;
 impl Router {
     pub fn route(req: HttpRequest, stream: &mut impl Write) -> () {
         match req.method {
+            // if the method is GET, then call the appropriate handler
+            // Only GET method is implemented
             httprequest::Method::GET => match &req.resource {
+                // if the resource is a path, then call the appropriate handler
                 httprequest::Resource::Path(s) => {
                     let route: Vec<&str> = s.split('/').collect();
                     match route[1] {
@@ -22,6 +25,7 @@ impl Router {
                         }
                     }
                 }
+                //To learn: Why I need this???
                 httprequest::Resource::Uninitialized => todo!(),
             },
             _ => {

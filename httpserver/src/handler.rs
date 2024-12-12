@@ -1,5 +1,4 @@
 use http::{httprequest::HttpRequest, httpresponse::HttpResponse};
-use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::env;
 use std::fs;
@@ -21,12 +20,6 @@ pub struct StaticPageHandler;
 pub struct PageNotFoundHandler;
 pub struct WebServiceHandler;
 
-#[derive(Serialize, Deserialize)]
-pub struct Myclaims {
-    item: String,
-    vat_incl: bool,
-    quantity: i32,
-}
 
 impl Handler for PageNotFoundHandler {
     fn handle(_req: &HttpRequest) -> HttpResponse {
@@ -63,18 +56,6 @@ impl Handler for StaticPageHandler {
     }
 }
 
-impl WebServiceHandler {
-    fn load_json() -> Vec<Myclaims> {
-        let default_path = format!("{}/data", env!("CARGO_MANIFEST_DIR"));
-        let data_path = env::var("DATA_PATH").unwrap_or(default_path);
-        let full_path = format!("{}/{}", data_path, "claims.json");
-        println!("Loading JSON from: {}", full_path);
-        let json_contents = fs::read_to_string(full_path);
-        let claims: Vec<Myclaims> =
-            serde_json::from_str(json_contents.unwrap().as_str()).unwrap();
-        claims
-    }
-}
 
 impl Handler for WebServiceHandler {
     fn handle(req: &HttpRequest) -> HttpResponse {
@@ -86,10 +67,11 @@ impl Handler for WebServiceHandler {
         //localhost:3000/api/price
         match route[2] {
             "price" if route.len() >2 => {
-                let body = serde_json::to_string(&Self::load_json()).unwrap().into_bytes();
+                let body = &String::from_utf8_lossy(&req.message_body);
+                println!("Request body: {}", body);
                 let mut headers: HashMap<&str, &str> = HashMap::new();
                 headers.insert("Content-Type", "application/json");
-                HttpResponse::new("200", Some(headers), Some(body))
+                HttpResponse::new("200", Some(headers), Some(b"Success".to_vec()))
             }
             _ => HttpResponse::new("404", None, Self::load_file("404.html")),
         }
