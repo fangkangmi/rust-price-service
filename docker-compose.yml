@@ -1,0 +1,48 @@
+services:
+  price-service:
+    container_name: price-service  # Name the container "price-service"
+    environment:
+      DB_IP: postgres://postgres:mysecretpassword@postgres-container:5432/test_db  # Set the DB_IP environment variable to the PostgreSQL connection string
+    ports:
+      - "8081:8081"  # Map port 8081 of the container to port 8081 on the host
+    networks:
+      - mynetwork  # Connect the container to the "mynetwork" network
+    build: .
+    depends_on:
+        # Ensure the postgres service is started before this service
+      postgres:  
+        condition: service_healthy
+  
+  postgres:
+    image: renzocherin/postgres-and-test-data:v2
+    container_name: postgres-container
+    environment:
+      POSTGRES_PASSWORD: mysecretpassword
+    ports:
+      - "5432:5432"
+    networks:
+      - mynetwork
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 1s
+      retries: 15
+      start_period: 20s
+      timeout: 1s
+
+ 
+
+# to bring up Postgres client tool
+  # pgadmin:
+  #   image: dpage/pgadmin4
+  #   container_name: pgadmin
+  #   environment:
+  #     PGADMIN_DEFAULT_EMAIL: admin@example.com
+  #     PGADMIN_DEFAULT_PASSWORD: admin
+  #   ports:
+  #     - "8080:80"
+  #   networks:
+  #     - mynetwork
+
+networks:
+  mynetwork:
+    driver: bridge

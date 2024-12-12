@@ -4,8 +4,8 @@ use std::io::{Read, Write};
 
 
 fn main() {
-    let listener = TcpListener::bind("127.0.0.1:3000").unwrap();
-    println!("Running on port 3000");
+    let listener = TcpListener::bind("127.0.0.1:8081").unwrap();
+    println!("Running on port 8081");
 
     for stream in listener.incoming() {
         let mut stream = stream.unwrap();

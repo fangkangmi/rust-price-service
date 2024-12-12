@@ -34,11 +34,11 @@ impl Handler for StaticPageHandler {
         };
         let route: Vec<&str> = s.split("/").collect();
         match route[1] {
-            // after localhost:3000/, if it is health, then call health.html
+            // after localhost:8081/, if it is health, then call health.html
             "" => HttpResponse::new("200", None, Self::load_file("index.html")),
             "health" => HttpResponse::new("200", None, Self::load_file("health.html")),
 
-            // after localhost:3000/, if it is api, then call WebServiceHandler
+            // after localhost:8081/, if it is api, then call WebServiceHandler
             path => match Self::load_file(path) {
                 Some(contents) => {
                     let mut map: HashMap<&str, &str> = HashMap::new();
@@ -64,7 +64,7 @@ impl Handler for WebServiceHandler {
         };
         let route: Vec<&str> = s.split("/").collect();
 
-        //localhost:3000/api/price
+        //localhost:8081/api/price
         match route[2] {
             "price" if route.len() >2 => {
                 let body = &String::from_utf8_lossy(&req.message_body);
